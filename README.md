@@ -13,7 +13,7 @@
 [![Journal](https://img.shields.io/badge/Target_journal-J._Exp._Botany-7a1f3d?style=flat-square)](#)
 [![Status](https://img.shields.io/badge/Status-under_review-success?style=flat-square)](#)
 
-**🧑‍🔬 Manuel A. Cortés-Quiceno · J. D. Rojas-Villafañez · H. M. Peña-Silgado · L. N. Garzón-Gutiérrez · E. A. Rojas-Triviño**
+**🧑‍🔬 M. A. Cortés-Quiceno · J. D. Rojas-Villafañez · H. M. Peña-Silgado · L. M. Miranda-Díaz · L. N. Garzón-Gutiérrez · E. A. Rojas-Triviño**
 Universidad Nacional de Colombia (Palmira) · Universidad Industrial de Santander
 
 </div>
