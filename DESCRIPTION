@@ -1,0 +1,26 @@
+Package: dinov2PhaseolusBoeremia
+Title: Latent-Space Phenotyping of Phaseolus vulgaris x Boeremia
+Version: 1.0.0
+Authors@R: c(
+  person("Manuel A.", "Cortés-Quiceno", role = c("aut", "cre"),
+         email = "macortesq@unal.edu.co"),
+  person("J. D.", "Rojas-Villafañez", role = "aut"),
+  person("H. M.", "Peña-Silgado", role = "aut"),
+  person("L. N.", "Garzón-Gutiérrez", role = "aut"),
+  person("E. A.", "Rojas-Triviño", role = "aut"))
+Description: Reproducible R side of the manuscript's pipeline: palette-based
+  severity (R4PDE conventions), AUDPC, PERMANOVA, PERMDISP and linear
+  mixed-model statistics.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends:
+    R (>= 4.3)
+Imports:
+    vegan,
+    lme4,
+    lmerTest,
+    emmeans,
+    jpeg
+Suggests:
+    renv,
+    quarto

@@ -1,0 +1,9 @@
+analysis,quantity,value,note
+Predictive PLS (severity ~ global embedding),grouped-CV R²,0.889,"95% CI [0.854, 0.890]"
+Predictive PLS,apparent R² (fit-all),0.928,overfitting gap small
+Predictive PLS,"RMSE (log severity, CV)",0.418,15 components
+Complementarity,latent variance NOT explained by severity,88.2%,—
+Complementarity,latent dist. (similar-severity pairs vs overall),0.533 vs 0.563,similar severity ≠ similar latent
+Block similarity (RV),global embedding vs classical severity,0.342,moderate overlap
+Block similarity (RV),spatial features vs classical severity,0.075,near-independent
+Block similarity (RV),global vs spatial,0.217,partial overlap

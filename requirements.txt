@@ -1,0 +1,30 @@
+# Core scientific stack
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11
+scikit-learn>=1.3
+matplotlib>=3.8
+seaborn>=0.13
+pillow>=10.0
+
+# DINOv2 and vision transformers
+torch>=2.1
+torchvision>=0.16
+timm>=0.9
+
+# Dimensionality reduction / visualisation
+umap-learn>=0.5.5
+
+# Image/data utilities
+tqdm>=4.66
+pyyaml>=6.0
+lxml>=5.0
+
+# Document build (manuscript + supplementary .docx)
+python-docx>=1.0
+# pandoc backend for Quarto/markdown→docx is a system binary; install separately
+
+# Optional: Quarto executes python chunks via jupyter
+jupyter>=1.0
+nbformat>=5.9
+ipykernel>=6.27

@@ -1,0 +1,89 @@
+# ───────────────────────────────────────────────
+# OS / editor
+# ───────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.idea/
+.vscode/
+*.sublime-*
+
+# ───────────────────────────────────────────────
+# Python
+# ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.python-version
+venv/
+.venv/
+env/
+.conda/
+
+# ───────────────────────────────────────────────
+# R
+# ───────────────────────────────────────────────
+.Rhistory
+.RData
+.Rproj.user/
+.Ruserdata
+renv/library/
+renv/local/
+renv/python/
+renv/staging/
+
+# ───────────────────────────────────────────────
+# Quarto / Jupyter
+# ───────────────────────────────────────────────
+/.quarto/
+_site/
+_freeze/
+*_files/
+*.quarto_ipynb
+analysis_notebook.html
+analysis_notebook_cache/
+
+# ───────────────────────────────────────────────
+# Heavy data / model artefacts (not for git)
+# ───────────────────────────────────────────────
+# raw & derived images, embeddings, model weights
+data/raw/
+data/resized/
+data/processed/
+outputs/embeddings/*.npy
+outputs/spatial/*.npy
+outputs/discrim/*.npy
+outputs/discrim/*.npz
+outputs/attention/*.png
+outputs/attention/*.npy
+outputs/latent/*.npy
+*.pt
+*.pth
+*.safetensors
+*.h5
+*.ckpt
+
+# scratch / tmp
+tmp/
+scratch/
+.cache/
+*.log
+*.tmp
+
+# ───────────────────────────────────────────────
+# Keep these (whitelist)
+# ───────────────────────────────────────────────
+!figures/*.png
+!figures/supplementary/*.png
+!tables/*.csv
+!tables/*.json
+!frozen/frozen_results.json
+!docs/manuscript/*.docx

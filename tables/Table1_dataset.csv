@@ -1,0 +1,6 @@
+accession,treatment,biological units,images T1,images T2,images T3,total images
+ASC 160,control,10,11,11,11,33
+ASC 160,inoculated,118,353,353,355,1061
+CAL 96,control,11,12,12,12,36
+CAL 96,inoculated,118,351,354,351,1056
+—,augmented (controls),—,—,—,—,532

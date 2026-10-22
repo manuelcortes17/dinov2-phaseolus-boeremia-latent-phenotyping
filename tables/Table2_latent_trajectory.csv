@@ -1,0 +1,12 @@
+analysis,term,estimate,statistic,significance
+PERMANOVA,accession,R²=0.213,F=265.6,P=0.001
+PERMANOVA,treatment,R²=0.037,F=45.9,P=0.001
+PERMANOVA,timepoint,R²=0.105,F=65.7,P=0.001
+PERMANOVA,accession:treatment,R²=0.010,F=12.2,P=0.001
+PERMANOVA,accession:timepoint,R²=0.019,F=11.8,P=0.001
+PERMANOVA,treatment:timepoint,R²=0.007,F=4.6,P=0.001
+PERMANOVA,accession:treatment:timepoint,R²=0.002,F=1.2,P=0.214
+PERMDISP,dispersion T1/T2/T3 (inoc),0.199/0.230/0.273 (ASC),0.228/0.253/0.307 (CAL),P=0.001
+Trajectory,"net latent displ. T1→T3 (ASC, inoc)",0.446,"95% CI [0.426, 0.467]",n=118
+Trajectory,"net latent displ. T1→T3 (CAL, inoc)",0.381,"95% CI [0.360, 0.403]",n=116
+Trajectory,ASC vs CAL displacement,permutation test,Δ=0.065,P=1.0e-04

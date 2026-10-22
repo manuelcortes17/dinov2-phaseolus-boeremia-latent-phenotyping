@@ -1,0 +1,303 @@
+---
+title: "Latent-Space Phenotyping of *Phaseolus vulgaris* × *Boeremia*"
+subtitle: "A reproducible walk-through of the DINOv2 frozen-representation pipeline"
+author:
+  - name: Manuel A. Cortés-Quiceno
+    affiliations: Universidad Nacional de Colombia — Palmira
+  - name: J. D. Rojas-Villafañez
+  - name: H. M. Peña-Silgado
+  - name: L. N. Garzón-Gutiérrez
+    affiliations: Universidad Industrial de Santander
+  - name: E. A. Rojas-Triviño
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    code-fold: show
+    code-tools: true
+    code-copy: true
+    highlight-style: github
+    theme: cosmo
+    fig-align: center
+    embed-resources: true
+    smooth-scroll: true
+    df-print: paged
+execute:
+  echo: true
+  warning: false
+  eval: false
+knitr:
+  opts_chunk:
+    comment: "#>"
+    collapse: true
+jupyter: python3
+---
+
+# 🌱 Overview {.unnumbered}
+
+This notebook mirrors the structure of the manuscript and, for every stage, shows the **exact script** that produced the result and the **figure (or table) that goes with it**. It is intentionally runnable top-to-bottom.
+
+> ✍️ **Target journal.** *Journal of Experimental Botany* — plant–pathogen interactions / phenomics.
+>
+> 🧊 **Frozen encoder.** DINOv2 ViT-B/14 is used **without any task-specific training**; every result below is a geometric or statistical reading of its features.
+>
+> 📦 **Frozen results.** All reported numbers are read from `frozen/frozen_results.json`, so figures and manuscript cannot drift apart.
+
+```{mermaid}
+flowchart LR
+  A[📸 Leaf images<br/>2,192 images · 257 units] --> B[🧠 Frozen DINOv2 ViT-B/14]
+  B --> C1[🌐 Global CLS<br/>768-d]
+  B --> C2[🧩 Patch grid<br/>16×16 × 768]
+  C1 --> D1[Latent space<br/>PCA · UMAP · PLS-DA]
+  C1 --> D2[Temporal trajectories<br/>T1 → T2 → T3]
+  C2 --> D3[Spatial phenotyping<br/>Moran's I · heterogeneity]
+  D1 --> E[Integration<br/>PLS · RV]
+  D2 --> E
+  D3 --> E
+  F[🌿 Conventional severity<br/>R4PDE palette] --> E
+  E --> G[📝 Manuscript]
+```
+
+---
+
+# 1 · Dataset indexing & QC
+
+Build a tidy index of every leaf image (accession, treatment, biological unit, evaluation) and run quality control (duplicates, mislabelled folders).
+
+```{python}
+#| label: build-index
+#| file: src/01_build_index.py
+```
+
+**Output:** `outputs/index/master_index.csv` with 2,192 original images across 257 biological units.
+
+| accession | treatment | units | T1 | T2 | T3 | total |
+|---|---|---:|---:|---:|---:|---:|
+| ASC 160 | control    |  10 | 11 | 11 | 11 |   33 |
+| ASC 160 | inoculated | 118 | 353 | 353 | 355 | 1061 |
+| CAL 96  | control    |  11 | 12 | 12 | 12 |   36 |
+| CAL 96  | inoculated | 118 | 351 | 354 | 351 | 1056 |
+| —       | augmented  |  —  | —  | —  | —  |  532 |
+
+See full table in [`tables/Table1_dataset.csv`](tables/Table1_dataset.csv).
+
+---
+
+# 2 · Frozen DINOv2 embeddings
+
+For each 224×224 image we read one 768-d **global class-token** vector and a 16×16 grid of **patch tokens** (and 32×32 at 448 px for high-resolution symptom maps). The encoder is held frozen — inference only.
+
+```{python}
+#| label: extract-embeddings
+#| file: src/04_extract_embeddings.py
+```
+
+**Why it matters.** Natural leaf images lie on a low-dimensional manifold; infection is a smooth optical deformation of that manifold, which is why disease reads as a *continuous* path through the embedding space.
+
+![**Figure 1.** Latent-phenotyping workflow and its mapping to the three objectives.](figures/Figure_1.png)
+
+---
+
+# 3 · Attention vs patch-based symptom localization
+
+We compare two candidate "disease-locators": raw transformer attention (rollout) and a **patch-based symptom score** (cosine distance of each patch to the healthy control-patch centroid).
+
+```{python}
+#| label: attention
+#| file: src/06_attention_demo.py
+```
+
+**Result.** The patch score tracks the visible symptom (Spearman ρ ≈ 0.35 across T1–T3) while raw attention does not (ρ ≈ −0.10). We therefore treat attention conservatively — the model looks at the leaf, but we read disease in feature geometry, not in attention weights.
+
+![**Figure 2.** Patch embeddings localize the symptom; attention stays on the lamina.](figures/Figure_2.png)
+
+---
+
+# 4 · The latent phenotypic space
+
+PCA, UMAP and supervised PLS-DA views of the 768-d global space; group-wise density; PCA scree.
+
+```{python}
+#| label: fig3
+#| file: src/fig3_latent.py
+```
+
+![**Figure 3.** A continuous latent space with three groups (two accessions + control).](figures/Figure_3.png)
+
+**Reading.** PC1–PC2 capture 15.8 % + 14.6 % of the variance; the three groups occupy distinct but *touching* regions — a continuous manifold rather than isolated clusters.
+
+---
+
+# 5 · Temporal trajectories
+
+Group centroids are projected onto the 3-D latent space and interpolated across the three evaluations (T1 → T2 → T3).
+
+```{python}
+#| label: trajectories
+#| file: src/08_trajectories.py
+```
+
+```{python}
+#| label: fig4
+#| file: src/fig4_traj.py
+```
+
+![**Figure 4.** Latent trajectories: ASC 160 travels farthest, Control the least.](figures/Figure_4.png)
+
+**Numbers.** Net latent displacement T1→T3: **ASC 160 = 0.35**, **CAL 96 = 0.24**, **Control = 0.15**. Permutation *P* = 1 × 10⁻⁴ (ASC vs CAL). Within-group dispersion rises monotonically with disease (PERMDISP *P* = 0.001).
+
+---
+
+# 6 · Spatial phenotyping (patch tokens)
+
+Patch-level symptom scores are mapped back to the 16 × 16 grid; we compute Moran's *I*, heterogeneity, lesion fraction and aggregation.
+
+```{python}
+#| label: spatial
+#| file: src/09_spatial.py
+```
+
+```{python}
+#| label: fig5
+#| file: src/fig5_spatial.py
+```
+
+![**Figure 5.** Severity and spatial organization are decoupled — leaves of similar severity can be fragmented *or* aggregated.](figures/Figure_5.png)
+
+**Key observation.** Two inoculated leaves of near-identical severity (17 % and 20 %) show opposite spatial patterns (Moran's *I* = +0.28 vs −0.21). Across the dataset, severity and Moran's *I* vary almost independently.
+
+---
+
+# 7 · Supervised discrimination
+
+A small linear probe (768 → 256 → 3) is trained under a **70 / 15 / 15** split made at the **biological-unit** level (no leaf, and no augmented view of a leaf, crosses partitions).
+
+```{python}
+#| label: classifier
+#| file: src/19_classifier.py
+```
+
+```{python}
+#| label: clustering
+#| file: src/20_clustering_discrim.py
+```
+
+```{python}
+#| label: fig6
+#| file: src/fig6_discrim.py
+```
+
+![**Figure 6.** Linear probe + grouped-CV + clustering: global embeddings carry group identity (ARI = 0.77), patch embeddings do not (ARI = 0.10).](figures/Figure_6.png)
+
+---
+
+# 8 · Conventional phytopathometry (R / R4PDE)
+
+Severity is estimated via a palette classifier (CIELAB nearest-colour), then aggregated into disease-progress curves and AUDPC following R4PDE conventions.
+
+```{r}
+#| label: r4pde-severity
+#| file: src/10_r4pde_severity.R
+```
+
+```{python}
+#| label: fig7
+#| file: src/fig7_r4pde.py
+```
+
+![**Figure 7.** Conventional phytopathometry: palette severity, progress curves, AUDPC and L² functional distance.](figures/Figure_7.png)
+
+**Numbers.** AUDPC: ASC 160 = **23.5** vs CAL 96 = **2.2**; functional distance between the two accession curves = **20.35**.
+
+---
+
+# 9 · Integration (PLS + RV)
+
+Blocks are related by Partial Least Squares (`severity ~ global embedding`) under **unit-grouped** 5-fold CV, and by **RV coefficients** between the three blocks.
+
+```{python}
+#| label: integration
+#| file: src/11_integration.py
+```
+
+```{python}
+#| label: correlation
+#| file: src/21_correlation.py
+```
+
+```{python}
+#| label: fig8
+#| file: src/fig8_synthesis.py
+```
+
+![**Figure 8.** Shared vs complementary information. Severity is recovered (R²_CV = 0.89) but 88 % of latent variance stays unexplained; spatial organization is essentially independent of severity (RV = 0.075).](figures/Figure_8.png)
+
+---
+
+# 10 · Statistics (R)
+
+Unit-level PERMANOVA (vegan), PERMDISP, linear mixed models (lme4/lmerTest), Kenward–Roger contrasts (emmeans).
+
+```{r}
+#| label: stats
+#| file: src/12_stats.R
+```
+
+Outputs: `tables/permanova.csv`, `tables/permdisp.csv`, `tables/lmm_severity_*.csv`, `tables/spatial_lmm_anova.csv`.
+
+---
+
+# 11 · Tables & frozen results
+
+```{python}
+#| label: tables
+#| file: src/15_tables.py
+```
+
+```{python}
+#| label: freeze
+#| file: src/16_freeze.py
+```
+
+- `tables/Table1_dataset.csv` — image dataset
+- `tables/Table2_latent_trajectory.csv` — PERMANOVA / PERMDISP / trajectory
+- `tables/Table3_integration.csv` — PLS + RV
+- `frozen/frozen_results.json` — every number cited in the manuscript
+
+---
+
+# 12 · Manuscript build (reproducible .docx)
+
+```{python}
+#| label: build-docx
+#| file: src/build_docx.py
+```
+
+```{python}
+#| label: build-supp
+#| file: src/build_supp.py
+```
+
+Produces `docs/manuscript/Manuscript_DINOv2_Phaseolus_Boeremia.docx` and the Supplementary Information with inline tables, figures and APA 7 references.
+
+---
+
+# 📚 References
+
+Full bibliography lives in the manuscript (`docs/manuscript/`). Representative anchors:
+
+- Oquab et al. (2024) *DINOv2: Learning robust visual features without supervision*. TMLR.
+- Caron et al. (2021) *Emerging properties in self-supervised vision transformers*. ICCV.
+- Ubbens et al. (2020) *Latent-space phenotyping*. Plant Phenomics.
+- Del Ponte (2023) *R for Plant Disease Epidemiology (R4PDE)*.
+- Anderson (2001) PERMANOVA; Robert & Escoufier (1976) RV coefficient.
+
+---
+
+<div align="center">
+
+**End of notebook — `quarto render analysis_notebook.qmd` for the full HTML walkthrough.**
+
+</div>

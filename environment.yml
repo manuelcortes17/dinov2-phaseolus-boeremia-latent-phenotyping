@@ -1,0 +1,25 @@
+name: dinov2-ringspot
+channels:
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.11
+  - pip
+  - numpy>=1.26
+  - pandas>=2.1
+  - scipy>=1.11
+  - scikit-learn>=1.3
+  - matplotlib>=3.8
+  - seaborn>=0.13
+  - pillow>=10.0
+  - pytorch>=2.1
+  - torchvision>=0.16
+  - umap-learn>=0.5.5
+  - tqdm
+  - pyyaml
+  - lxml
+  - jupyter
+  - ipykernel
+  - pip:
+      - timm>=0.9
+      - python-docx>=1.0
