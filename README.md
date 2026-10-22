@@ -10,7 +10,6 @@
 [![R 4.3](https://img.shields.io/badge/R-4.3-276DC3?style=flat-square&logo=r&logoColor=white)](https://www.r-project.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-DINOv2-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)](https://github.com/facebookresearch/dinov2)
 [![Quarto](https://img.shields.io/badge/Quarto-notebook-39729E?style=flat-square&logo=quarto&logoColor=white)](https://quarto.org/)
-[![Journal](https://img.shields.io/badge/Target_journal-J._Exp._Botany-7a1f3d?style=flat-square)](#)
 [![Status](https://img.shields.io/badge/Status-under_review-success?style=flat-square)](#)
 
 **🧑‍🔬 M. A. Cortés-Quiceno · J. D. Rojas-Villafañez · H. M. Peña-Silgado · L. M. Miranda-Díaz · L. N. Garzón-Gutiérrez · E. A. Rojas-Triviño**
